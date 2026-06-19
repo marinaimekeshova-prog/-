@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: Экономика и менеджмент горного производства</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FAF7F2; --bg2: #F5EFE6; --panel: #EDE0CC;
+    --dark: #3D2E1E; --brown: #6B4C2A; --copper: #B87333;
+    --gold: #C9A84C; --sage: #7A9E7E; --cream: #FDF9F3;
+    --muted: #8C7B6B; --green: #4A7C59; --red: #9B3A3A;
+    --blue: #6B8CAE; --dusty: #9B8EA0;
+  }
+  body { background: var(--bg); font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--dark); min-height: 100vh; }
+
+  /* ─── ORNAMENTAL BORDER ─── */
+  .orn-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+  .orn-line { position: absolute; background: var(--copper); }
+  .orn-line.top    { top: 14px; left: 20px; right: 20px; height: 2px; }
+  .orn-line.bottom { bottom: 14px; left: 20px; right: 20px; height: 2px; }
+  .orn-line.left   { left: 14px; top: 14px; bottom: 14px; width: 2px; }
+  .orn-line.right  { right: 14px; top: 14px; bottom: 14px; width: 2px; }
+  .orn-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--copper); }
+  .orn-dot.tl { top: 10px; left: 10px; }
+  .orn-dot.tr { top: 10px; right: 10px; }
+  .orn-dot.bl { bottom: 10px; left: 10px; }
+  .orn-dot.br { bottom: 10px; right: 10px; }
+
+  /* ─── PAGES ─── */
+  .page { display: none; min-height: 100vh; padding: 30px 24px 60px; max-width: 800px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ─── COVER ─── */
+  #cover { text-align: center; }
+  .cover-logo { font-size: 56px; margin: 40px 0 16px; }
+  .cover-badge { display: inline-block; background: var(--copper); color: white; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 6px 18px; border-radius: 20px; margin-bottom: 20px; }
+  .cover-title { font-size: 26px; font-weight: 700; color: var(--dark); font-family: Cambria, serif; line-height: 1.3; margin-bottom: 12px; }
+  .cover-sub { color: var(--brown); font-size: 14px; font-style: italic; margin-bottom: 36px; line-height: 1.6; }
+  .cover-meta { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 40px; }
+  .cover-meta-item { background: var(--cream); border: 1.5px solid var(--panel); border-radius: 10px; padding: 12px 20px; font-size: 13px; color: var(--brown); font-weight: 600; }
+  .cover-meta-item span { display: block; font-size: 20px; font-weight: 700; color: var(--copper); }
+
+  /* ─── FORM ─── */
+  .form-section { background: var(--cream); border: 1.5px solid var(--panel); border-radius: 14px; padding: 28px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(100,70,30,.08); }
+  .form-label { font-size: 13px; font-weight: 700; color: var(--brown); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--panel); border-radius: 10px; font-size: 15px; color: var(--dark); background: white; transition: border-color .2s; outline: none; }
+  .form-input:focus { border-color: var(--copper); }
+
+  /* ─── TEST TYPE SELECTOR ─── */
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+  .type-card { border: 2px solid var(--panel); border-radius: 12px; padding: 18px 16px; cursor: pointer; transition: all .2s; background: white; text-align: center; }
+  .type-card:hover { border-color: var(--copper); background: var(--bg2); }
+  .type-card.selected { border-color: var(--copper); background: #FEF4E8; }
+  .type-card .tc-icon { font-size: 28px; margin-bottom: 8px; }
+  .type-card .tc-title { font-size: 13.5px; font-weight: 700; color: var(--dark); }
+  .type-card .tc-desc { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+  /* ─── BUTTONS ─── */
+  .btn { display: inline-block; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: all .2s; text-align: center; }
+  .btn-primary { background: var(--copper); color: white; width: 100%; }
+  .btn-primary:hover { background: var(--brown); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-secondary { background: var(--panel); color: var(--brown); }
+  .btn-secondary:hover { background: var(--bg2); }
+
+  /* ─── PROGRESS ─── */
+  .progress-bar-wrap { background: var(--panel); border-radius: 8px; height: 8px; margin: 16px 0; }
+  .progress-bar { height: 8px; border-radius: 8px; background: var(--copper); transition: width .4s; }
+  .progress-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+
+  /* ─── QUESTION ─── */
+  .q-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .q-num { width: 44px; height: 44px; border-radius: 50%; background: var(--copper); color: white; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .q-topic { font-size: 11.5px; color: var(--muted); font-style: italic; }
+  .q-text { background: var(--cream); border: 1.5px solid var(--copper); border-radius: 12px; padding: 18px 20px; font-size: 15.5px; font-weight: 600; color: var(--dark); line-height: 1.5; margin-bottom: 18px; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .option { display: flex; align-items: center; gap: 14px; background: var(--cream); border: 1.5px solid #D0C5B5; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all .2s; }
+  .option:hover { border-color: var(--copper); background: #FEF4E8; }
+  .option.selected { border-color: var(--copper); background: #FEF4E8; }
+  .option.correct { border-color: var(--green); background: #E8F5EE; }
+  .option.wrong   { border-color: var(--red); background: #F5E8E8; }
+  .option-letter { width: 34px; height: 34px; border-radius: 50%; font-size: 13px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .letter-a { background: var(--copper); }
+  .letter-b { background: var(--sage); }
+  .letter-c { background: var(--dusty); }
+  .letter-d { background: var(--blue); }
+  .option-text { font-size: 14px; color: var(--dark); line-height: 1.4; }
+  .q-nav { display: flex; gap: 10px; align-items: center; }
+  .q-nav .btn { padding: 12px 24px; font-size: 14px; }
+
+  /* ─── RESULT ─── */
+  .result-hero { text-align: center; padding: 32px 20px; }
+  .score-circle { width: 130px; height: 130px; border-radius: 50%; border: 6px solid var(--copper); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; background: var(--cream); }
+  .score-num { font-size: 38px; font-weight: 700; color: var(--copper); font-family: Cambria, serif; line-height: 1; }
+  .score-total { font-size: 14px; color: var(--muted); }
+  .grade-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .grade-excellent { background: #E8F5EE; color: var(--green); border: 2px solid var(--green); }
+  .grade-good { background: #EEF5EE; color: var(--sage); border: 2px solid var(--sage); }
+  .grade-ok { background: #FEF8E6; color: var(--gold); border: 2px solid var(--gold); }
+  .grade-fail { background: #F5E8E8; color: var(--red); border: 2px solid var(--red); }
+  .result-msg { font-size: 14px; color: var(--brown); font-style: italic; margin-bottom: 24px; }
+  .result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+  .stat-card { background: var(--cream); border: 1.5px solid var(--panel); border-radius: 10px; padding: 14px; text-align: center; }
+  .stat-num { font-size: 24px; font-weight: 700; color: var(--copper); font-family: Cambria,serif; }
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ─── REVIEW ─── */
+  .review-item { background: var(--cream); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; border-left: 4px solid var(--panel); }
+  .review-item.correct-item { border-left-color: var(--green); }
+  .review-item.wrong-item   { border-left-color: var(--red); }
+  .review-q { font-size: 13.5px; font-weight: 600; color: var(--dark); margin-bottom: 8px; line-height: 1.4; }
+  .review-answers { display: flex; flex-direction: column; gap: 5px; }
+  .review-ans { font-size: 12.5px; padding: 5px 10px; border-radius: 6px; }
+  .review-ans.user-correct  { background: #E8F5EE; color: var(--green); font-weight: 600; }
+  .review-ans.user-wrong    { background: #F5E8E8; color: var(--red); }
+  .review-ans.correct-right { background: #E8F5EE; color: var(--green); }
+  .review-explanation { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--dark); margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
+
+  /* ─── ADMIN PANEL ─── */
+  #admin-panel { padding: 24px; }
+  .admin-header { background: var(--dark); color: white; padding: 20px 24px; border-radius: 14px; margin-bottom: 24px; }
+  .admin-header h2 { font-size: 20px; font-family: Cambria,serif; }
+  .admin-header p { font-size: 13px; color: #CCC; margin-top: 4px; }
+  .result-card { background: var(--cream); border: 1.5px solid var(--panel); border-radius: 12px; padding: 18px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(100,70,30,.07); cursor: pointer; transition: border-color .2s; }
+  .result-card:hover { border-color: var(--copper); }
+  .result-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .result-card-name { font-size: 15px; font-weight: 700; color: var(--dark); }
+  .result-card-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .score-pill { padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .pill-green { background: #E8F5EE; color: var(--green); }
+  .pill-sage  { background: #EEF5EE; color: var(--sage); }
+  .pill-gold  { background: #FEF8E6; color: var(--gold); }
+  .pill-red   { background: #F5E8E8; color: var(--red); }
+  .admin-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+  .admin-empty .big { font-size: 48px; margin-bottom: 14px; }
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+  .filter-btn { padding: 7px 16px; border-radius: 20px; font-size: 12.5px; font-weight: 600; border: 1.5px solid var(--panel); background: var(--cream); color: var(--brown); cursor: pointer; transition: all .2s; }
+  .filter-btn.active { background: var(--copper); color: white; border-color: var(--copper); }
+  .notification-banner { background: #E8F5EE; border: 1.5px solid var(--green); border-radius: 10px; padding: 12px 18px; font-size: 13.5px; color: var(--green); font-weight: 600; margin-bottom: 16px; display: none; }
+  .notification-banner.show { display: block; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; display: none; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--bg); border-radius: 16px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+  .modal-close { float: right; background: var(--panel); border: none; border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 13px; color: var(--brown); font-weight: 600; }
+
+  /* ─── MISC ─── */
+  .divider { height: 1.5px; background: var(--panel); margin: 24px 0; border-radius: 2px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600; }
+  .tag-entry  { background: #FEF4E8; color: var(--copper); border: 1px solid var(--copper); }
+  .tag-final  { background: #EEF5EE; color: var(--sage); border: 1px solid var(--sage); }
+  .nav-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--panel); margin-bottom: 22px; }
+  .nav-tab { padding: 10px 20px; font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .2s; }
+  .nav-tab.active { color: var(--copper); border-bottom-color: var(--copper); }
+  .alert { padding: 12px 16px; border-radius: 10px; font-size: 13.5px; margin-bottom: 16px; }
+  .alert-info { background: #EEF5FE; color: var(--blue); border: 1.5px solid var(--blue); }
+  .share-box { background: var(--cream); border: 1.5px solid var(--panel); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .share-url { flex: 1; font-size: 12px; color: var(--muted); word-break: break-all; font-family: monospace; min-width: 200px; }
+  .copy-btn { padding: 8px 16px; border-radius: 8px; background: var(--copper); color: white; border: none; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .copy-btn:hover { background: var(--brown); }
+  @media(max-width:600px) { .type-grid{grid-template-columns:1fr;} .result-stats{grid-template-columns:1fr 1fr;} .cover-meta{gap:12px;} }
+</style>
+</head>
+<body>
+
+<!-- Ornamental border -->
+<div class="orn-wrap">
+  <div class="orn-line top"></div><div class="orn-line bottom"></div>
+  <div class="orn-line left"></div><div class="orn-line right"></div>
+  <div class="orn-dot tl"></div><div class="orn-dot tr"></div>
+  <div class="orn-dot bl"></div><div class="orn-dot br"></div>
+</div>
+
+<!-- ══════════════════ PAGE: COVER ══════════════════ -->
+<div id="cover" class="page active">
+  <div class="cover-logo">⛏</div>
+  <div class="cover-badge">КУРС ПОВЫШЕНИЯ КВАЛИФИКАЦИИ</div>
+  <h1 class="cover-title">Экономика и менеджмент<br>горного производства</h1>
+  <p class="cover-sub">Онлайн-тестирование для оценки знаний слушателей<br>Входной тест · Итоговый тест</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span>20</span>вопросов</div>
+    <div class="cover-meta-item"><span>60</span>минут</div>
+    <div class="cover-meta-item"><span>4</span>варианта</div>
+  </div>
+
+  <div class="form-section">
+    <label class="form-label">Ваше ФИО</label>
+    <input class="form-input" id="input-name" placeholder="Иванов Иван Иванович" type="text" autocomplete="name">
+    <div style="margin-top:14px;">
+      <label class="form-label">Организация / Группа</label>
+      <input class="form-input" id="input-org" placeholder="ТОО «Горнодобывающая компания»" type="text">
+    </div>
+  </div>
+
+  <div class="form-section">
+    <label class="form-label">Выберите тест</label>
+    <div class="type-grid">
+      <div class="type-card" id="card-entry" onclick="selectType('entry')">
+        <div class="tc-icon">📋</div>
+        <div class="tc-title">Входной тест</div>
+        <div class="tc-desc">Диагностика до курса<br>Базовые понятия</div>
+      </div>
+      <div class="type-card" id="card-final" onclick="selectType('final')">
+        <div class="tc-icon">🎓</div>
+        <div class="tc-title">Итоговый тест</div>
+        <div class="tc-desc">Аттестация после курса<br>Расчёты и анализ</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="start-btn" onclick="startTest()" disabled>
+    Начать тестирование →
+  </button>
+
+  <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted);">
+    Нажимая «Начать», вы соглашаетесь с тем, что результаты будут переданы преподавателю
+  </p>
+
+  <div class="divider"></div>
+  <button class="btn btn-secondary" onclick="showAdmin()" style="width:100%;font-size:13px;">
+    🔐 Панель преподавателя
+  </button>
+</div>
+
+<!-- ══════════════════ PAGE: QUESTION ══════════════════ -->
+<div id="q-page" class="page">
+  <div class="progress-text">
+    <span id="q-label"></span>
+    <span id="q-counter"></span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="q-progress"></div></div>
+
+  <div class="q-header">
+    <div class="q-num" id="q-num-badge">1</div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);">Тема</div>
+      <div class="q-topic" id="q-topic"></div>
+    </div>
+  </div>
+
+  <div class="q-text" id="q-text"></div>
+  <div class="options" id="q-options"></div>
+
+  <div class="q-nav">
+    <button class="btn btn-secondary" id="btn-prev" onclick="prevQ()">← Назад</button>
+    <button class="btn btn-primary" id="btn-next" onclick="nextQ()" style="flex:1;" disabled>Далее →</button>
+  </div>
+  <p id="q-hint" style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px;"></p>
+</div>
+
+<!-- ══════════════════ PAGE: RESULT ══════════════════ -->
+<div id="result-page" class="page">
+  <div class="result-hero">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;" id="res-name-line"></div>
+    <div class="score-circle">
+      <div class="score-num" id="res-score"></div>
+      <div class="score-total" id="res-total"></div>
+    </div>
+    <div class="grade-badge" id="res-grade"></div>
+    <p class="result-msg" id="res-msg"></p>
+  </div>
+
+  <div class="result-stats">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-correct" style="color:var(--green)"></div>
+      <div class="stat-lbl">✅ Правильно</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-wrong" style="color:var(--red)"></div>
+      <div class="stat-lbl">❌ Неверно</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-pct" style="color:var(--copper)"></div>
+      <div class="stat-lbl">📊 Результат</div>
+    </div>
+  </div>
+
+  <div class="alert alert-info" id="res-alert"></div>
+
+  <button class="btn btn-primary" onclick="showReview()" style="margin-bottom:12px;">
+    🔍 Посмотреть разбор ответов
+  </button>
+  <button class="btn btn-secondary" onclick="restartTest()" style="width:100%;">
+    ↩ Пройти ещё раз
+  </button>
+</div>
+
+<!-- ══════════════════ PAGE: REVIEW ══════════════════ -->
+<div id="review-page" class="page">
+  <h2 style="font-size:18px;font-weight:700;color:var(--dark);font-family:Cambria,serif;margin-bottom:6px;">Разбор ответов</h2>
+  <div id="rev-summary" style="font-size:13px;color:var(--muted);margin-bottom:20px;"></div>
+  <div id="review-list"></div>
+  <button class="btn btn-secondary" onclick="showPage('result-page')" style="width:100%;margin-top:10px;">← К результатам</button>
+</div>
+
+<!-- ══════════════════ PAGE: ADMIN ══════════════════ -->
+<div id="admin-page" class="page">
+  <div class="admin-header">
+    <h2>🔐 Панель преподавателя</h2>
+    <p>Результаты тестирования слушателей · Экономика и менеджмент горного производства</p>
+  </div>
+
+  <div class="notification-banner" id="notif-banner">🔔 Новый результат!</div>
+
+  <div style="margin-bottom:18px;">
+    <label class="form-label" style="margin-bottom:8px;">Ссылка для слушателей</label>
+    <div class="share-box">
+      <span class="share-url" id="share-url-text"></span>
+      <button class="copy-btn" onclick="copyLink()">📋 Копировать</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+      Отправьте эту ссылку слушателям. Все результаты сохраняются в этом браузере.
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <span style="font-size:13px;color:var(--muted);font-weight:600;">Фильтр:</span>
+    <button class="filter-btn active" onclick="filterResults('all',this)">Все</button>
+    <button class="filter-btn" onclick="filterResults('entry',this)">📋 Входной</button>
+    <button class="filter-btn" onclick="filterResults('final',this)">🎓 Итоговый</button>
+    <div style="margin-left:auto;font-size:12px;color:var(--muted);" id="admin-count"></div>
+  </div>
+
+  <div id="admin-list"></div>
+
+  <div class="divider"></div>
+  <button class="btn btn-secondary" onclick="showPage('cover')" style="width:100%;">← На главную</button>
+</div>
+
+<!-- MODAL: detail result -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕ Закрыть</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const TESTS = {
+  entry: {
+    label: 'Входной тест',
+    color: '#B87333',
+    questions: [
+      {q:'Что такое себестоимость продукции?', topic:'Базовые понятия',
+       a:['Выручка предприятия от продажи продукции','Совокупность всех затрат на производство и реализацию продукции','Разница между выручкой и налогами','Сумма активов предприятия на конец периода'],
+       c:1, e:'Себестоимость = сумма всех затрат на производство + реализацию единицы продукции'},
+      {q:'Коэффициент вскрыши (КВ) в открытой добыче — это:', topic:'Экономика горного предприятия',
+       a:['Доля полезного компонента в руде','Отношение объёма руды к горной массе','Отношение объёма вскрышных пород к объёму добытой руды','Норма расхода взрывчатки на тонну породы'],
+       c:2, e:'КВ = вскрыша (т) / руда (т). При КВ=4 на 1т руды убирают 4т пустой породы'},
+      {q:'Как называются затраты, не изменяющиеся при изменении объёма производства?', topic:'Классификация затрат',
+       a:['Переменные затраты','Постоянные затраты','Прямые затраты','Косвенные затраты'],
+       c:1, e:'Постоянные: аренда, амортизация, оклады АУП — не зависят от объёма добычи'},
+      {q:'Что такое CAPEX?', topic:'Инвестиционный анализ',
+       a:['Текущие расходы на топливо и материалы','Капитальные затраты на приобретение или создание долгосрочных активов','Коммерческие расходы на продажу','Налоги на добычу полезных ископаемых'],
+       c:1, e:'CAPEX (Capital Expenditures) — инвестиции в активы >1 года: техника, здания, инфраструктура'},
+      {q:'Прибыль предприятия — это:', topic:'Базовые понятия',
+       a:['Выручка за вычетом налогов','Выручка от реализации минус полная себестоимость','Себестоимость плюс амортизация','Сумма всех активов минус обязательства'],
+       c:1, e:'П = Выручка − Полная себестоимость. Базовая формула финансового результата'},
+      {q:'Что такое амортизация основных средств?', topic:'Базовые понятия',
+       a:['Стоимость планового ремонта оборудования','Штраф за простой производства','Перенос стоимости ОС на себестоимость по мере их износа','Выплата дивидендов акционерам'],
+       c:2, e:'Амортизация — постепенное включение стоимости основных средств в себестоимость'},
+      {q:'Что означает показатель OPEX?', topic:'Экономика горного предприятия',
+       a:['Оптимальный план выработки экскаватора','Операционные (текущие эксплуатационные) расходы периода','Объём экспортируемой продукции','Оценка расширения карьера'],
+       c:1, e:'OPEX (Operating Expenditures) — текущие затраты: ГСМ, реагенты, зарплата, ремонты'},
+      {q:'Рентабельность продаж (ROS) — это:', topic:'Финансовые показатели',
+       a:['Отношение выручки к себестоимости × 100%','Отношение прибыли к себестоимости × 100%','Отношение чистой прибыли к выручке × 100%','Отношение активов к выручке × 100%'],
+       c:2, e:'ROS = (Прибыль / Выручка) × 100% — доля прибыли в каждом тенге выручки'},
+      {q:'Что такое горная масса (ГМ)?', topic:'Экономика горного предприятия',
+       a:['Только полезное ископаемое, добытое за период','Суммарный объём всех пород, извлечённых из недр: руда + вскрыша','Объём породы в отвалах','Масса взрывчатых веществ, применённых при добыче'],
+       c:1, e:'ГМ = Руда + Вскрыша. При КВ=3: ГМ = 1 т руды + 3 т вскрыши = 4 т'},
+      {q:'Что представляет собой производственная цепочка горного предприятия?', topic:'Производственная цепочка',
+       a:['Перечень поставщиков оборудования','Последовательность переделов: добыча → транспорт → переработка → отгрузка','Организационная структура управления','График ТО оборудования'],
+       c:1, e:'Производственная цепочка — все переделы от добычи сырья до реализации продукции'},
+      {q:'Что такое разубоживание руды?', topic:'Потери и качество',
+       a:['Снижение содержания из-за попадания пустых пород в рудную массу','Потери металла при транспортировке концентрата','Снижение качества из-за поломки оборудования','Уменьшение запасов вследствие выработки'],
+       c:0, e:'Разубоживание снижает среднее содержание металла в добытой руде ниже блочного'},
+      {q:'Бюджет предприятия — это:', topic:'Бюджетирование',
+       a:['Отчёт о фактических расходах за прошлый год','Перечень основных средств предприятия','Финансовый план доходов и расходов на будущий период','Документ о налоговых обязательствах'],
+       c:2, e:'Бюджет — плановый документ: доходы, расходы, прибыль на будущий период'},
+      {q:'Что такое NPV проекта?', topic:'Инвестиционный анализ',
+       a:['Нормативный показатель выработки','Чистая приведённая стоимость: дисконтированные потоки минус инвестиции','Норма прибыли на вложенный капитал','Натуральный производственный объём'],
+       c:1, e:'NPV = Σ[CF/(1+r)^t] − I₀. Если NPV > 0 — проект создаёт стоимость'},
+      {q:'KTG (коэффициент технической готовности) — это:', topic:'Управление затратами',
+       a:['Удельная производительность (т/ч)','Количество плановых ремонтов в год','Доля времени работоспособности оборудования от общего фонда','Коэффициент загрузки мощностей'],
+       c:2, e:'KTG = T_работоспособное / T_общее × 100%. Норматив для самосвалов: 85–90%'},
+      {q:'Переменные затраты в горном производстве — это:', topic:'Классификация затрат',
+       a:['Затраты на амортизацию оборудования','Изменяющиеся пропорционально объёму добычи (ГСМ, взрывчатка, реагенты)','Оклады административного персонала','Арендные платежи за землю'],
+       c:1, e:'Переменные затраты растут с ростом объёма: ГСМ, взрывчатка, реагенты, шины'},
+      {q:'IRR (Internal Rate of Return) — это:', topic:'Инвестиционный анализ',
+       a:['Ежегодная выручка от реализации','Ставка дисконтирования, при которой NPV = 0','Индекс рентабельности активов','Норма расхода ресурсов на единицу'],
+       c:1, e:'IRR — доходность проекта. Если IRR > стоимости капитала → проект выгоден'},
+      {q:'Дисконтирование денежных потоков — это:', topic:'Инвестиционный анализ',
+       a:['Умножение потоков на ставку инфляции','Перевод валютных показателей в нац. валюту','Приведение будущих потоков к текущей стоимости по ставке дисконтирования','Деление расходов на доходы'],
+       c:2, e:'PV = FV / (1+r)^t — деньги сегодня дороже будущих из-за возможности инвестировать'},
+      {q:'Что такое TCO (Total Cost of Ownership)?', topic:'Стоимость владения техникой',
+       a:['Таможенные сборы при ввозе оборудования','Технические условия эксплуатации','Тарифная ставка оплаты операторов','Полная стоимость владения: покупка + ГСМ + ремонты + шины + персонал + простои'],
+       c:3, e:'TCO = C_покупки + C_ГСМ + C_ремонтов + C_шин + C_персонала + C_простоев'},
+      {q:'Прямые затраты в горном производстве — это:', topic:'Классификация затрат',
+       a:['Затраты, которые невозможно прямо отнести на продукт','Затраты, непосредственно связанные с производством конкретного продукта','Только административные расходы','Налоговые платежи'],
+       c:1, e:'Прямые: взрывчатка, ГСМ, реагенты — прямо относятся на единицу продукта'},
+      {q:'Срок окупаемости (Payback Period) инвестиционного проекта — это:', topic:'Инвестиционный анализ',
+       a:['Срок действия лицензии на добычу','Промежуток, за который денежные потоки компенсируют инвестиции','Период полной амортизации оборудования','Продолжительность строительства рудника'],
+       c:1, e:'T_ok = Инвестиции / Ежегодный CF. Пример: 500 млн / 100 млн = 5 лет'},
+    ]
+  },
+  final: {
+    label: 'Итоговый тест',
+    color: '#7A9E7E',
+    questions: [
+      {q:'Карьер добывает 500 000 т руды/мес. при КВ = 3,5. Затраты на горную массу — 2,80 $/т ГМ. Себестоимость добычи на 1 т руды:', topic:'Себестоимость. КВ и расчёт затрат',
+       a:['2,80 $/т','9,80 $/т','12,60 $/т','16,00 $/т'],
+       c:2, e:'C = 2,80 × (1+3,5) = 2,80 × 4,5 = 12,60 $/т руды'},
+      {q:'KTG парка из 10 самосвалов: общий фонд = 7 200 ч, плановые ремонты = 520 ч, аварийные = 280 ч. KTG парка:', topic:'KTG и производительность',
+       a:['90,3%','88,9%','85,6%','83,0%'],
+       c:1, e:'KTG = (7200 − 520 − 280) / 7200 = 6400 / 7200 = 88,9%'},
+      {q:'TCO самосвала за год: амортизация 180 тыс.$, ГСМ 215 тыс.$, шины 46 тыс.$, ремонты 88 тыс.$, персонал 50 тыс.$. Наработка 6 400 ч. Удельный TCO ($/ч):', topic:'Стоимость владения техникой (TCO)',
+       a:['90,5 $/ч','88,0 $/ч','85,2 $/ч','93,4 $/ч'],
+       c:0, e:'TCO = 180+215+46+88+50 = 579 тыс.$ / 6 400 ч = 90,47 $/ч ≈ 90,5 $/ч'},
+      {q:'Время цикла самосвала: погрузка 4 мин, движение гружёного (2 км / 22 км/ч), разгрузка 2 мин, движение порожнего (2 км / 38 км/ч). Время цикла:', topic:'Драйверы затрат. Цикл самосвала',
+       a:['12,1 мин','14,6 мин','11,5 мин','16,0 мин'],
+       c:1, e:'T = 4 + (2/22×60) + 2 + (2/38×60) = 4 + 5,45 + 2 + 3,16 = 14,6 мин'},
+      {q:'Что из перечисленного является примером ПОСТОЯННЫХ затрат горного предприятия?', topic:'Классификация затрат',
+       a:['Расход взрывчатых веществ на БВР','Затраты на ГСМ карьерного транспорта','Амортизация горнодобывающего оборудования','Расход реагентов на ГОФ'],
+       c:2, e:'Амортизация — постоянная затрата: начисляется вне зависимости от объёма добычи'},
+      {q:'Золотодобывающий рудник: добыча 900 000 т/кв., содержание 2,2 г/т, извлечение 90%. Производство золота (тр. унц., 1 унц.=31,1 г):', topic:'Себестоимость. AISC и Cash Cost',
+       a:['52 380 унц.','57 299 унц.','47 840 унц.','64 300 унц.'],
+       c:1, e:'Au = 900 000 × 2,2 × 0,90 = 1 782 000 г / 31,1 = 57 299 унц.'},
+      {q:'OPEX рудника = 22 500 000 $, выручка от попутного Ag = 800 000 $, sustaining CAPEX = 2 200 000 $, производство Au = 55 000 унц. AISC:', topic:'Себестоимость. AISC и Cash Cost',
+       a:['409 $/унц.','435 $/унц.','450 $/унц.','445 $/унц.'],
+       c:1, e:'AISC = (22 500 000 − 800 000 + 2 200 000) / 55 000 = 23 900 000 / 55 000 = 435 $/унц.'},
+      {q:'Факторный анализ: план объём = 600 000 т, факт = 520 000 т. Плановые уд. затраты = 4,50 $/т. Объёмный фактор отклонения OPEX:', topic:'Факторный анализ отклонений',
+       a:['+360 000 $','−360 000 $','−520 000 $','+480 000 $'],
+       c:1, e:'Δ_объём = (520 000 − 600 000) × 4,50 = −80 000 × 4,50 = −360 000 $ (экономия)'},
+      {q:'Какой метод учёта затрат предусматривает учёт расходов по каждому технологическому переделу?', topic:'Методы учёта и оценки затрат',
+       a:['Позаказный метод','Нормативный метод','Попередельный метод','Директ-костинг'],
+       c:2, e:'Попередельный метод: затраты накапливаются отдельно по каждому переделу (дробление→флотация)'},
+      {q:'Компания сравнивает подрядное и собственное выполнение БВР (800 000 т/год). Собственное: 3,25 $/т. Подряд: ставка 3,00 $/т + скрытые 0,70 $/т. Разница затрат в год:', topic:'Собственное vs подрядное выполнение',
+       a:['Подряд дешевле на 200 000 $','Собственное дешевле на 360 000 $','Подряд дешевле на 360 000 $','Затраты одинаковы'],
+       c:1, e:'Подряд = 3,70 × 800 000 = 2 960 000 $. Своё = 3,25 × 800 000 = 2 600 000 $. Δ = 360 000 $'},
+      {q:'Проект: CAPEX = 500 млн ₸, FCF = 120 млн ₸/год, 5 лет, r = 10% (PV-фактор аннуитета = 3,791). NPV:', topic:'Инвестиционная оценка. NPV и IRR',
+       a:['−45,1 млн ₸','−4,9 млн ₸','+4,9 млн ₸','+45,1 млн ₸'],
+       c:0, e:'NPV = 120 × 3,791 − 500 = 454,9 − 500 = −45,1 млн ₸. Проект убыточен!'},
+      {q:'LCC нового экскаватора: стоимость 8 000 000 $, ресурс 48 000 ч, OPEX = 70 $/ч. LCC на 1 час:', topic:'LCC и замена оборудования',
+       a:['70 $/ч','137 $/ч','166 $/ч','237 $/ч'],
+       c:3, e:'LCC/ч = (8 000 000 / 48 000) + 70 = 166,7 + 70 = 236,7 ≈ 237 $/ч'},
+      {q:'Ремонт старого экскаватора: 1 200 000 $, ресурс 15 000 ч. Новый: 6 000 000 $, ресурс 50 000 ч. Сравнение CAPEX/ч:', topic:'LCC и замена оборудования',
+       a:['Ремонт: 80 $/ч vs новый: 120 $/ч — ремонт дешевле по CAPEX','Ремонт: 80 $/ч vs новый: 120 $/ч — новый дешевле','Ремонт: 120 $/ч vs новый: 80 $/ч — новый дешевле','Оба варианта равны: 100 $/ч'],
+       c:0, e:'Ремонт CAPEX/ч: 1 200k/15 000=80$/ч. Новый: 6 000k/50 000=120$/ч. Ремонт дешевле'},
+      {q:'IRR проекта = 20%, WACC компании = 15%. Правильное решение:', topic:'Инвестиционная оценка. NPV и IRR',
+       a:['Отклонить: слишком рискованный','Принять: IRR превышает стоимость капитала на 5%','Отложить: IRR должен быть ≥ 25%','Принять только при NPV < 0'],
+       c:1, e:'Правило: IRR > WACC → проект выгоден. 20% > 15% → принять'},
+      {q:'Анализ чувствительности показывает: изменение цены металла на 1% меняет NPV на 18 млн $, OPEX на 1% — на 8 млн $. Главный риск:', topic:'Инвестиционная оценка. Сценарный анализ',
+       a:['Рост OPEX — влияет сильнее','Изменение цены металла — влияет сильнее','Оба фактора одинаковы','Ни один не является критичным'],
+       c:1, e:'Цена металла (18 млн/$%) > OPEX (8 млн/$%). Главный риск — волатильность рынка'},
+      {q:'Rolling Forecast отличается от годового бюджета тем, что:', topic:'Бюджетирование',
+       a:['Формируется раз в год по итогам акционеров','Обновляется ежемесячно, сохраняя горизонт 12–18 мес.','Включает только капитальные затраты','Составляется только на основе данных прошлого года'],
+       c:1, e:'Rolling Forecast: при закрытии каждого месяца добавляется новый → горизонт всегда 12 мес.'},
+      {q:'AISC в золотодобывающей промышленности — это:', topic:'Себестоимость. AISC и Cash Cost',
+       a:['Среднегодовое содержание в месторождении','Аффинажные издержки на очистку металла','Суммарные удельные затраты: C1 + sustaining CAPEX + корп. расходы ($/унц.)','Амортизация добывающего оборудования'],
+       c:2, e:'AISC = C1 Cash Cost + sustaining CAPEX/унц. + G&A/унц. Стандарт WGC'},
+      {q:'Ключевые KPI начальника участка добычи (ежедневный контроль):', topic:'KPI и управленческая отчётность',
+       a:['NPV проекта и IRR инвестиционного портфеля','Объём добычи (т), КВ текущий, KTG парка, $/т ГМ','EBITDA компании и курс валют','Квартальная выручка от реализации концентрата'],
+       c:1, e:'Начальник участка управляет оперативными показателями: объём, КВ, KTG, удельные затраты'},
+      {q:'Типичные ошибки инвестиционных моделей горных проектов:', topic:'Инвестиционная оценка',
+       a:['Консервативные прогнозы цен и завышенный WACC','Переоценка содержания металла, sustaining CAPEX = 0, игнорирование затрат на закрытие','Избыточный учёт экологических рисков','Завышение курса валюты и занижение стоимости персонала'],
+       c:1, e:'Классика: dilution не учтён, sustaining CAPEX=0, нет затрат на рекультивацию'},
+      {q:'Рычаги снижения затрат в горном производстве без ущерба объёмам:', topic:'Управление затратами',
+       a:['Сокращение бригады ниже минимума','Оптимизация маршрутов транспорта, повышение KTG, снижение разубоживания','Полный отказ от плановых ремонтов','Снижение нормативного извлечения металла на ГОФ'],
+       c:1, e:'Маршрутизация, рост KTG, снижение разубоживания — рычаги без ущерба производству'},
+      {q:'EAC (Equivalent Annual Cost) применяется для:', topic:'LCC и замена оборудования',
+       a:['Расчёта ежегодного налога на имущество','Определения оптимального момента замены оборудования','Оценки ежегодного потребления электроэнергии','Расчёта эффективной ставки по кредиту'],
+       c:1, e:'EAC = NPV_LCC × r / (1−(1+r)^−n). Замена выгодна: EAC_нового < затраты на старый'},
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  name: '', org: '', testType: null,
+  questions: [], answers: [], currentQ: 0, submitted: false,
+  startTime: null
+};
+
+// ═══════════════════════════════════════════════════════
+// STORAGE (persistent via localStorage)
+// ═══════════════════════════════════════════════════════
+function getResults() {
+  try { return JSON.parse(localStorage.getItem('miningTestResults') || '[]'); }
+  catch(e) { return []; }
+}
+function saveResult(result) {
+  const results = getResults();
+  results.unshift(result);
+  localStorage.setItem('miningTestResults', JSON.stringify(results));
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════════════════
+// COVER
+// ═══════════════════════════════════════════════════════
+function selectType(type) {
+  state.testType = type;
+  document.getElementById('card-entry').classList.toggle('selected', type === 'entry');
+  document.getElementById('card-final').classList.toggle('selected', type === 'final');
+  updateStartBtn();
+}
+function updateStartBtn() {
+  const name = document.getElementById('input-name').value.trim();
+  document.getElementById('start-btn').disabled = !(name && state.testType);
+}
+document.getElementById('input-name').addEventListener('input', updateStartBtn);
+
+// ═══════════════════════════════════════════════════════
+// START TEST
+// ═══════════════════════════════════════════════════════
+function startTest() {
+  state.name = document.getElementById('input-name').value.trim();
+  state.org  = document.getElementById('input-org').value.trim();
+  if (!state.name || !state.testType) return;
+  state.questions = TESTS[state.testType].questions;
+  state.answers = new Array(state.questions.length).fill(null);
+  state.currentQ = 0;
+  state.submitted = false;
+  state.startTime = Date.now();
+  renderQuestion();
+  showPage('q-page');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════════
+function renderQuestion() {
+  const q = state.questions[state.currentQ];
+  const n = state.currentQ + 1;
+  const total = state.questions.length;
+  const test = TESTS[state.testType];
+
+  document.getElementById('q-label').textContent = test.label;
+  document.getElementById('q-counter').textContent = `${n} / ${total}`;
+  document.getElementById('q-progress').style.width = (n/total*100)+'%';
+  document.getElementById('q-num-badge').textContent = n;
+  document.getElementById('q-topic').textContent = q.topic;
+  document.getElementById('q-text').textContent = q.q;
+
+  const optDiv = document.getElementById('q-options');
+  optDiv.innerHTML = '';
+  const letters = ['А','Б','В','Г'];
+  const lclasses = ['letter-a','letter-b','letter-c','letter-d'];
+  q.a.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (state.answers[state.currentQ] === i ? ' selected' : '');
+    div.innerHTML = `<div class="option-letter ${lclasses[i]}">${letters[i]}</div><div class="option-text">${opt}</div>`;
+    div.onclick = () => selectAnswer(i);
+    optDiv.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').style.display = state.currentQ === 0 ? 'none' : '';
+  const isLast = n === total;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = isLast ? '✅ Завершить и отправить' : 'Далее →';
+  nextBtn.disabled = state.answers[state.currentQ] === null;
+
+  // Hint for unanswered
+  const unanswered = state.answers.filter(a => a === null).length;
+  const hint = document.getElementById('q-hint');
+  if (unanswered > 0 && !isLast) {
+    hint.textContent = `Осталось ответить: ${unanswered} из ${total}`;
+  } else {
+    hint.textContent = '';
+  }
+}
+
+function selectAnswer(i) {
+  state.answers[state.currentQ] = i;
+  renderQuestion();
+}
+
+function nextQ() {
+  if (state.answers[state.currentQ] === null) return;
+  if (state.currentQ < state.questions.length - 1) {
+    state.currentQ++;
+    renderQuestion();
+  } else {
+    submitTest();
+  }
+}
+
+function prevQ() {
+  if (state.currentQ > 0) {
+    state.currentQ--;
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════════
+function submitTest() {
+  const unanswered = state.answers.filter(a => a === null).length;
+  if (unanswered > 0) {
+    if (!confirm(`Вы ответили не на все вопросы (пропущено: ${unanswered}). Завершить тест?`)) return;
+  }
+
+  state.submitted = true;
+  const elapsed = Math.round((Date.now() - state.startTime) / 60000);
+  const qs = state.questions;
+  let correct = 0;
+  qs.forEach((q, i) => { if (state.answers[i] === q.c) correct++; });
+  const total = qs.length;
+  const pct = Math.round(correct / total * 100);
+
+  const grade = pct >= 90 ? 'excellent' : pct >= 70 ? 'good' : pct >= 50 ? 'ok' : 'fail';
+  const gradeLabels = { excellent:'Отлично', good:'Хорошо', ok:'Удовлетворительно', fail:'Неудовлетворительно' };
+  const gradeMsgs = {
+    excellent: 'Превосходный результат! Вы уверенно владеете материалом курса.',
+    good: 'Хороший результат! Основные концепции усвоены.',
+    ok: 'Удовлетворительный результат. Рекомендуется повторить ключевые темы.',
+    fail: 'Рекомендуется повторное изучение материала.'
+  };
+
+  // Save result
+  const result = {
+    id: Date.now(),
+    name: state.name, org: state.org,
+    testType: state.testType,
+    testLabel: TESTS[state.testType].label,
+    score: correct, total, pct, grade,
+    elapsed, answers: [...state.answers],
+    date: new Date().toLocaleString('ru-RU')
+  };
+  saveResult(result);
+
+  // Render result page
+  document.getElementById('res-name-line').textContent = state.name + (state.org ? ' · ' + state.org : '');
+  document.getElementById('res-score').textContent = correct;
+  document.getElementById('res-total').textContent = `из ${total}`;
+  const gb = document.getElementById('res-grade');
+  gb.textContent = gradeLabels[grade];
+  gb.className = `grade-badge grade-${grade}`;
+  document.getElementById('res-msg').textContent = gradeMsgs[grade];
+  document.getElementById('stat-correct').textContent = correct;
+  document.getElementById('stat-wrong').textContent = total - correct;
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('res-alert').textContent = `✅ Ваш результат сохранён и отправлен преподавателю. Время прохождения: ~${elapsed} мин.`;
+
+  showPage('result-page');
+}
+
+// ═══════════════════════════════════════════════════════
+// REVIEW
+// ═══════════════════════════════════════════════════════
+function showReview() {
+  const qs = state.questions;
+  const letters = ['А','Б','В','Г'];
+  let html = '';
+  let correct = 0;
+  qs.forEach((q, i) => {
+    const userAns = state.answers[i];
+    const isCorrect = userAns === q.c;
+    if (isCorrect) correct++;
+    const cls = isCorrect ? 'correct-item' : 'wrong-item';
+    const icon = isCorrect ? '✅' : '❌';
+    html += `<div class="review-item ${cls}">
+      <div class="review-q">${icon} <strong>Вопрос ${i+1}:</strong> ${q.q}</div>
+      <div class="review-answers">`;
+    q.a.forEach((opt, j) => {
+      let cls2 = '';
+      if (j === q.c) cls2 = 'review-ans correct-right';
+      else if (j === userAns && !isCorrect) cls2 = 'review-ans user-wrong';
+      else cls2 = 'review-ans';
+      const marker = j === q.c ? '✅ ' : (j === userAns && !isCorrect ? '✗ ' : '   ');
+      if (cls2 !== 'review-ans') // only show relevant answers
+        html += `<div class="${cls2}">${marker}${letters[j]}. ${opt}</div>`;
+    });
+    if (!isCorrect && userAns !== null) {
+      html += `<div class="review-ans user-wrong">✗ Ваш ответ: ${letters[userAns]}. ${q.a[userAns]}</div>`;
+    }
+    html += `<div class="review-explanation">💡 ${q.e}</div></div></div>`;
+  });
+
+  document.getElementById('rev-summary').textContent =
+    `${state.name} · ${TESTS[state.testType].label} · Правильных: ${correct} из ${qs.length}`;
+  document.getElementById('review-list').innerHTML = html;
+  showPage('review-page');
+}
+
+// ═══════════════════════════════════════════════════════
+// RESTART
+// ═══════════════════════════════════════════════════════
+function restartTest() {
+  state.testType = null;
+  document.getElementById('card-entry').classList.remove('selected');
+  document.getElementById('card-final').classList.remove('selected');
+  document.getElementById('start-btn').disabled = true;
+  showPage('cover');
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════
+let currentFilter = 'all';
+
+function showAdmin() {
+  showPage('admin-page');
+  document.getElementById('share-url-text').textContent = window.location.href;
+  renderAdminList();
+}
+
+function renderAdminList(filter) {
+  if (filter !== undefined) currentFilter = filter;
+  const results = getResults().filter(r =>
+    currentFilter === 'all' || r.testType === currentFilter);
+
+  document.getElementById('admin-count').textContent = `Записей: ${results.length}`;
+
+  if (results.length === 0) {
+    document.getElementById('admin-list').innerHTML =
+      '<div class="admin-empty"><div class="big">📭</div><div>Результатов пока нет.<br>Отправьте ссылку слушателям.</div></div>';
+    return;
+  }
+
+  const pillClass = g => ({excellent:'pill-green',good:'pill-sage',ok:'pill-gold',fail:'pill-red'}[g] || 'pill-gold');
+  const gradeLabel = g => ({excellent:'Отлично',good:'Хорошо',ok:'Удовл.',fail:'Неудовл.'}[g] || g);
+
+  document.getElementById('admin-list').innerHTML = results.map(r =>
+    `<div class="result-card" onclick="openDetail(${r.id})">
+      <div class="result-card-header">
+        <div>
+          <div class="result-card-name">${r.name}</div>
+          <div class="result-card-meta">
+            <span class="tag ${r.testType==='entry'?'tag-entry':'tag-final'}">${r.testLabel}</span>
+            &nbsp;${r.org ? '· '+r.org+' &nbsp;' : ''}· ${r.date} · ~${r.elapsed} мин
+          </div>
+        </div>
+        <div>
+          <div class="score-pill ${pillClass(r.grade)}">${r.score}/${r.total} · ${r.pct}%</div>
+          <div style="font-size:11px;color:var(--muted);text-align:right;margin-top:4px;">${gradeLabel(r.grade)}</div>
+        </div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function filterResults(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdminList();
+}
+
+function openDetail(id) {
+  const r = getResults().find(x => x.id === id);
+  if (!r) return;
+  const qs = TESTS[r.testType].questions;
+  const letters = ['А','Б','В','Г'];
+  const gradeLabel = {excellent:'Отлично',good:'Хорошо',ok:'Удовл.',fail:'Неудовл.'};
+  const pillClass = {excellent:'pill-green',good:'pill-sage',ok:'pill-gold',fail:'pill-red'};
+
+  let html = `
+    <h2 style="font-size:18px;font-weight:700;color:var(--dark);font-family:Cambria,serif;margin-bottom:4px;">${r.name}</h2>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:18px;">${r.org||''} · ${r.date} · ${r.testLabel}</div>
+    <div class="result-stats">
+      <div class="stat-card"><div class="stat-num" style="color:var(--copper)">${r.score}/${r.total}</div><div class="stat-lbl">Баллов</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--copper)">${r.pct}%</div><div class="stat-lbl">Результат</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--copper)">${r.elapsed} мин</div><div class="stat-lbl">Время</div></div>
+    </div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <span class="score-pill ${pillClass[r.grade]||'pill-gold'}" style="font-size:15px;padding:8px 20px;">${gradeLabel[r.grade]||r.grade}</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">🔍 Разбор ответов</div>`;
+
+  qs.forEach((q, i) => {
+    const ua = r.answers ? r.answers[i] : null;
+    const ok = ua === q.c;
+    html += `<div class="review-item ${ok?'correct-item':'wrong-item'}" style="margin-bottom:10px;">
+      <div class="review-q">${ok?'✅':'❌'} <b>Вопрос ${i+1}:</b> ${q.q}</div>`;
+    if (!ok) {
+      html += `<div class="review-ans user-wrong" style="margin-top:6px;">✗ Ответ слушателя: ${ua!==null?letters[ua]+'. '+q.a[ua]:'не отвечен'}</div>`;
+    }
+    html += `<div class="review-ans correct-right" style="margin-top:4px;">✅ Правильно: ${letters[q.c]}. ${q.a[q.c]}</div>`;
+    html += `<div class="review-explanation">💡 ${q.e}</div></div>`;
+  });
+
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Скопировано!';
+    setTimeout(() => btn.textContent = '📋 Копировать', 2000);
+  });
+}
+
+// Init share URL
+document.getElementById('share-url-text').textContent = window.location.href;
+
+// Check notification (new results in last 5 min)
+function checkNotification() {
+  const results = getResults();
+  if (results.length > 0) {
+    const latest = results[0];
+    const age = Date.now() - latest.id;
+    if (age < 300000) { // 5 min
+      const notif = document.getElementById('notif-banner');
+      notif.textContent = `🔔 Новый результат: ${latest.name} — ${latest.score}/${latest.total} (${latest.pct}%) — ${latest.date}`;
+      notif.classList.add('show');
+    }
+  }
+}
+</script>
+</body>
+</html>
